@@ -1,26 +1,6 @@
 #add, sub, and, or, sll，srl，lw, sw, addi,ori,lui,slt,slti,beq, bne,
 # j, jal, jr.
 #op rs rt rd shamt func
-op_dic={'add':'000000',\
-		'addi':'001000',\
-		'sub':'000000',\
-		'and':'000000',\
-		'or':'000000',\
-		'ori':'001101',\
-		'andi':'001100',\
-		'nor':'000000',\
-		'sll':'000000',\
-		'srl':'000000',\
-		'lw':'100011',\
-		'sw':'101011',\
-		'lui':'001111',\
-		'slt':'000000',\
-		'slti':'001010',\
-		'beq':'000100',\
-		'bne':'000101',\
-		'j':'000010',\
-		'jal':'000011',\
-		'jr':'000000'}
 
 func_dic={'add':'100000',\
 		'sub':'100010',\
@@ -64,18 +44,81 @@ reg_dic={'$zero':'00000',\
 		'$sp':'11101',\
 		'$fp':'11110',\
 		'$ra':'11111'}
-def remove_comma(l):
-	"remove ',' "
-	newl=[]
-	for k in l:
-		if ',' in k:
-			temp=list(k)
-			temp.remove(',')
-			k=''.join(i for i in temp)
-			newl.append(k)
-		else:
-			newl.append(k)
-	return newl;
+dis_reg_dic={'00000':'$zero',\
+			'00001':'$at',\
+			'00010':'$v0',\
+			'00011':'$v1',\
+			'00100':'$a0',\
+			'00101':'$a1',\
+			'00110':'$a2',\
+			'00111':'$a3',\
+			'01000':'$t0',\
+			'01001':'$t1',\
+			'01010':'$t2',\
+			'01011':'$t3',\
+			'01100':'$t4',\
+			'01101':'$t5',\
+			'01110':'$t6',\
+			'01111':'$t7',\
+			'10000':'$s0',\
+			'10001':'$s1',\
+			'10010':'$s2',\
+			'10011':'$s3',\
+			'10100':'$s4',\
+			'10101':'$s5',\
+			'10110':'$s6',\
+			'10111':'$s7',\
+			'11000':'$t8',\
+			'11001':'$t9',\
+			'11010':'$k0',\
+			'11011':'$k1',\
+			'11100':'$gp',\
+			'11101':'$sp',\
+			'11110':'$fp',\
+			'11111':'$ra'}
+op_dic={'add':'000000',\
+		'addi':'001000',\
+		'sub':'000000',\
+		'and':'000000',\
+		'or':'000000',\
+		'ori':'001101',\
+		'andi':'001100',\
+		'nor':'000000',\
+		'sll':'000000',\
+		'srl':'000000',\
+		'lw':'100011',\
+		'sw':'101011',\
+		'lui':'001111',\
+		'slt':'000000',\
+		'slti':'001010',\
+		'beq':'000100',\
+		'bne':'000101',\
+		'j':'000010',\
+		'jal':'000011',\
+		'jr':'000000'}
+
+dis_op_dic={'001000':'addi',\
+			'001101':'ori',\
+			'001100':'andi',\
+			'001010':'slti',\
+			'001111':'lui',\
+			'100011':'lw',\
+			'101011':'sw',\
+			'000100':'beq',\
+			'000010':'j',\
+			'000011':'jal',\
+
+			'0x20':'add',\
+			'0x22':'sub',\
+			'0x24':'and',\
+			'0x25':'or',\
+			'0x27':'nor',\
+			'0x2a':'slt',\
+			'0x0':'sll',\
+			'0x2':'srl',\
+			'000101':'bne',\
+			'0x8':'jr'
+			}
 
 def zero_extend(s, num):
 	"extend an unsigned number to num's bits"
@@ -92,117 +135,116 @@ def signed_extend(s, num):
 
 def deci2bin(n):
 	"change decimal string to binary"
-	return bin(eval(n))[bin(eval(n)).index('b')+1:]
+	return bin(int(eval(n)))[bin(int(eval(n))).index('b')+1:]
 
 
 def mips_add(l):
 	"add rd, rs, rt | rd=rs+rt"
 
-	l = remove_comma(l);
+
 	op=l[0]
 	rd=l[1]
 	rs=l[2]
 	rt=l[3]
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + reg_dic[rd] + '00000' + func_dic[op]
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_sub(l):
 	"sub rd, rs, rt | rd=rs-rt"
 
-	l = remove_comma(l);
+
 	op=l[0]
 	rd=l[1]
 	rs=l[2]
 	rt=l[3]
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + reg_dic[rd] + '00000' + func_dic[op]
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_and(l):
 	"and rd, rs, rt | rd=rs&rt"
 
-	l = remove_comma(l);
+
 	op=l[0]
 	rd=l[1]
 	rs=l[2]
 	rt=l[3]
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + reg_dic[rd] + '00000' + func_dic[op]
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_or(l):
 	"or rd, rs, rt | rd=rs|rt"
 
-	l = remove_comma(l);
+
 	op=l[0]
 	rd=l[1]
 	rs=l[2]
 	rt=l[3]
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + reg_dic[rd] + '00000' + func_dic[op]
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_sll(l):
 	"sll rd, rt, sa | rd=rt<<sa"
 
-	l = remove_comma(l);
+
 	op=l[0]
 	rd=l[1]
 	rt=l[2]
 	sa=bin(eval(l[3]))[2:]
+	sa=zero_extend(sa,5)
 	s = op_dic[op] + '00000' + reg_dic[rt] + reg_dic[rd] + sa + func_dic[op]
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_srl(l):
 	"srl rd, rt, sa | rd=rt>>sa"
 
-	l = remove_comma(l);
+
 	op=l[0]
 	rd=l[1]
 	rt=l[2]
 	sa=bin(eval(l[3]))[2:]
+	sa=zero_extend(sa,5)
 	s = op_dic[op] + '00000' + reg_dic[rt] + reg_dic[rd] + sa + func_dic[op]
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_lw(l):
 	"lw $rt offset($rs)"
 
-	l = remove_comma(l);
+
 	op=l[0]
 	rt=l[1]
-	reg_index=l[2].index('$')
-	rs=l[2][ reg_index : reg_index+3 ]
-
-	offset = l[2][0:i-1]
+	l[2]=l[2].replace('(',' ').replace(')',' ').split()
+	rs=l[2][1]
+	offset=l[2][0]
 	offset = deci2bin(offset)
 	offset = zero_extend(offset,16)
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + offset
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_sw(l):
 	"sw $rt offset($rs)"
 
-	l = remove_comma(l);
+
 	op=l[0]
 	rt=l[1]
-	reg_index=l[2].index('$')
-	rs=l[2][ reg_index : reg_index+3 ]
-
-	offset = l[2][0:i-1]
+	l[2]=l[2].replace('(',' ').replace(')',' ').split()
+	rs=l[2][1]
+	offset=l[2][0]
 	offset = deci2bin(offset)
 	offset = zero_extend(offset,16)
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + offset
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_addi(l):
 	"addi rt, rs, imme | rt=rs+imme"
 
-	l = remove_comma(l)
 	op=l[0]
 	rt=l[1]
 	rs=l[2]
@@ -220,13 +262,12 @@ def mips_addi(l):
 		imme=signed_extend(imme, 16)
 
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + imme
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_ori(l):
 	"ori rt, rs, imme | rt=rs+imme"
 
-	l = remove_comma(l)
 	op=l[0]
 	rt=l[1]
 	rs=l[2]
@@ -236,13 +277,12 @@ def mips_ori(l):
 	imme=zero_extend(imme, 16)
 
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + imme
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_andi(l):
 	"andi rt, rs, imme | rt=rs+imme"
 
-	l = remove_comma(l)
 	op=l[0]
 	rt=l[1]
 	rs=l[2]
@@ -252,17 +292,16 @@ def mips_andi(l):
 	imme=zero_extend(imme, 16)
 
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + imme
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_lui(l):
 	"lui $rt imme"
 
-	l = remove_comma(l)
 	op=l[0]
 	rt=l[1]
 
-	imme=l[3]
+	imme=l[2]
 	if eval(imme)>0:
 		imme=deci2bin(imme)
 		imme='0'+imme;
@@ -275,26 +314,21 @@ def mips_lui(l):
 		imme=signed_extend(imme, 16)
 
 	s = op_dic[op] + '00000' + reg_dic[rt] + imme
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_slt(l):
 	"slt rd rs rt"
-
-	l= remove_comma(l)
 	op=l[0]
 	rd=l[1]
 	rs=l[2]
 	rt=l[3]
-
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + reg_dic[rd] +'00000' + func_dic[op]
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_slti(l):
 	"slti rt rs imme"
-
-	l= remove_comma(l)
 	op=l[0]
 	rt=l[1]
 	rs=l[2]
@@ -312,13 +346,12 @@ def mips_slti(l):
 		imme=signed_extend(imme, 16)
 
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + imme
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_beq(l, bef):
 	"beq rs, rt, imme"
 
-	l= remove_comma(l)
 	op=l[0]
 	rs=l[1]
 	rt=l[2]
@@ -341,13 +374,12 @@ def mips_beq(l, bef):
 		imme=signed_extend(imme, 16)
 
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + imme
-	result.append(s)
+	result_1.append(s)
 	return
 
 def mips_bne(l, bef):
 	"bne rs, rt, imme"
 
-	l= remove_comma(l)
 	op=l[0]
 	rs=l[1]
 	rt=l[2]
@@ -370,117 +402,187 @@ def mips_bne(l, bef):
 		imme=signed_extend(imme, 16)
 
 	s = op_dic[op] + reg_dic[rs] + reg_dic[rt] + imme
-	result.append(s)
+	result_1.append(s)
 	return
 def mips_j(l, bef):
-	"j target"
-
-	l=remove_comma(l)
+	"j target"	
 	op=l[0]
 	temp_target=l[1]
 
 	if temp_target in label_list:
-		pass						##remains to be supply
+		target = label_queue[label_list.index(temp_target)]					
 	else:
 		target=eval(temp_target)//4
 
 	target=deci2bin(str(target))
 	target=zero_extend(target, 26)
 	s = op_dic[op] + target
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_jal(l, bef):
-	"jal target"
-
-	l=remove_comma(l)
+	"jal target"	
 	op=l[0]
 	temp_target=l[1]
 
 	if temp_target in label_list:
-		pass						##remains to be supply
+		target = label_queue[label_list.index(temp_target)]						
 	else:
 		target=eval(temp_target)/4
 
 	target=deci2bin(str(target))
 	target=zero_extend(target, 26)
 	s = op_dic[op] + target
-	result.append(s)
+	result_1.append(s)
 	return;
 
 def mips_jr(l):
-	"jr rs"
-
-	l=remove_comma(l)
+	"jr rs"	
 	op=l[0]
 	rs=l[1]
 
 	s=op_dic[op] + reg_dic[rs] + '00000' + '00000' + '00000' + func_dic[op]
-	result.append(s)
+	result_1.append(s)
 	return; 
 
+def mips_dis_i(l):
+	"i format, op rs rt imme"
+	rs= dis_reg_dic[l[6:11]]
+	rt= dis_reg_dic[l[11:16]]
+	imme= str(int(l[16:], 2))
+	op= dis_op_dic[l[:6]]
+	s= op +' '+ rt + ', '
 
+	if op=='sw' or op=='lw':
+		s=s + '{:d}({:s})'.format(int(imme),rs)
+	elif op=='lui':
+		s=s+ imme
+	else:
+		s=s+rs+', '+imme
+	result_2.append(s)
+	return
+
+def mips_dis_r(l):
+	"r format, op rd rs rt/sa"
+	rs=dis_reg_dic[l[6:11]]
+	rt=dis_reg_dic[l[11:16]]
+	rd=dis_reg_dic[l[16:21]]
+	sa=l[21:26]
+	func=str(hex(int(l[26:],2)))
+	op=dis_op_dic[func]
+
+	if op=='sll' or op=='srl':
+		s=op + ' ' + rd + ', ' + rt + ', '+str(int(sa,2))
+	elif op=='jr':
+		s=op + ' ' + rs
+	else:
+		s=op + ' ' + rd + ', ' + rs + ', '+ rt
+	result_2.append(s)
+	return
+
+def mips_dis_j(l):
+	"j format, op target"
+	op=dis_op_dic[l[:6]]
+	target=str(int(l[6:],2)*4)
+
+	s=op+' '+target
+
+	result_2.append(s)
+	return
 #main
-fin=open('test.txt','r')
+mode=input('''please input the program mode:
+1: assembler
+2: disassembler
+''')
+if mode=='1':
+	fin_name=input('please input the file name to assemble: ')
+	fin=open(fin_name,'r')
+	fout_name=input('please input the file name to store the result')
+	fout=open(fout_name,'w')
+	row=fin.read().lower().split('\n')
 
-raw=fin.read().lower().split('\n')
+	label_list=list()
+	label_queue=list()
 
-label_list=list()
-label_queue=list()
-
-for i in range(0, len(raw)):
-	sentence=raw[i].split()
-	#print(sentence)
-	if sentence[0][-1]==':':
-		name=sentence[0][0:-1]
-		if not (name in label_list):
+	for i in range(0, len(row)):
+		if i =='' or i is None:
+			continue
+		row[i]=row[i].replace(',',' ').replace(':',' ').split()
+		#print(sentence)
+		name=row[i][0]
+		if (not name in op_dic) and (not name in label_list):
 			label_list.append(name)
 			label_queue.append(i)
-			raw[i]=raw[i][raw[i].index(':') + 1 : -1 ]
-result=[]
-for j in range(0, len(raw)):
-	sentence=raw[j].split()
-	#print(sentence)
-	if sentence[0]=='add':
-		mips_add(sentence)
-	elif sentence[0]=='addi':
-		mips_addi(sentence)
-	elif sentence[0]=='sub':
-		mips_sub(sentence)
-	elif sentence[0]=='and':
-		mips_and(sentence)
-	elif sentence[0]=='or':
-		mips_or(sentence)
-	elif sentence[0]=='ori':
-		mips_ori(sentence)
-	elif sentence[0]=='andi':
-		mips_andi(sentence)
-	elif sentence[0]=='sll':
-		mips_sll(sentence)
-	elif sentence[0]=='srl':
-		mips_srl(sentence)
-	elif sentence[0]=='lw':
-		mips_lw(sentence)
-	elif sentence[0]=='sw':
-		mips_sw(sentence)
-	elif sentence[0]=='lui':
-		mips_lui(sentence)
-	elif sentence[0]=='slt':
-		mips_slt(sentence)
-	elif sentence[0]=='slti':
-		mips_slt(sentence)
-	elif sentence[0]=='beq':
-		mips_beq(sentence,j)
-	elif sentence[0]=='bne':
-		mips_bne(sentence,j)
-	elif sentence[0]=='j':
-		mips_j(sentence,j)
-	elif sentence[0]=='jal':
-		mips_jal(sentence,j)
-	elif sentence[0]=='jr':
-		mips_jr(sentence)
-#for i in result:
+			row[i]=row[i][1:]
+	result_1=[]
+	for j in range(0, len(row)):
+		sentence=row[j]
+		#print(sentence)
+		if sentence[0]=='add':
+			mips_add(sentence)
+		elif sentence[0]=='addi':
+			mips_addi(sentence)
+		elif sentence[0]=='sub':
+			mips_sub(sentence)
+		elif sentence[0]=='and':
+			mips_and(sentence)
+		elif sentence[0]=='or':
+			mips_or(sentence)
+		elif sentence[0]=='ori':
+			mips_ori(sentence)
+		elif sentence[0]=='andi':
+			mips_andi(sentence)
+		elif sentence[0]=='sll':
+			mips_sll(sentence)
+		elif sentence[0]=='srl':
+			mips_srl(sentence)
+		elif sentence[0]=='lw':
+			mips_lw(sentence)
+		elif sentence[0]=='sw':
+			mips_sw(sentence)
+		elif sentence[0]=='lui':
+			mips_lui(sentence)
+		elif sentence[0]=='slt':
+			mips_slt(sentence)
+		elif sentence[0]=='slti':
+			mips_slti(sentence)
+		elif sentence[0]=='beq':
+			mips_beq(sentence,j)
+		elif sentence[0]=='bne':
+			mips_bne(sentence,j)
+		elif sentence[0]=='j':
+			mips_j(sentence,j)
+		elif sentence[0]=='jal':
+			mips_jal(sentence,j)
+		elif sentence[0]=='jr':
+			mips_jr(sentence)
+#for i in result_1:
 #	print(hex(int('0b'+i,2)))
-for i in result:
-	temp=hex(int(i,2))[2:]
-	print(zero_extend(temp,8))
+	for i in result_1:
+		#fout.write(i+'\n')
+		temp=hex(int(i,2))[2:]
+		fout.write(zero_extend(temp,8)+'\n')
+
+
+
+elif mode=='2':
+	fin_name=input('please input the file name to disassemble: ')
+	fin=open(fin_name,'r')
+	fout_name=input('please input the file name to store the result')
+	fout=open(fout_name,'w')
+	row=fin.read().split('\n')
+	result_2=[]
+	for i in row:
+		if i is None or i=='':
+			continue
+		i=zero_extend(bin(int(i,16))[2:],32)
+		op=i[:6]
+		if op=='001000' or op=='001101' or op=='001100' or op=='001010' or op=='001111' or op=='100011' or op=='101011' or op=='000100' or op=='000101':
+			mips_dis_i(i)
+		elif op=='000010' or op=='000011':
+			mips_dis_j(i)
+		elif op=='000000':
+			mips_dis_r(i)
+
+	for i in result_2:
+		fout.write(i+'\n')
